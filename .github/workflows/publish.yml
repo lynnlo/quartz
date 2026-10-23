@@ -12,9 +12,8 @@ name: Build notes & deploy to Vercel
 #   VERCEL_ORG_ID     - from `vercel link` (team id), or "team_xxx"
 #   VERCEL_PROJECT_ID - from `vercel link` (project id)
 on:
-  schedule:
-    # Periodic refresh — every 6 hours (GitHub schedules use UTC).
-    - cron: "0 */6 * * *"
+  # Deploys are manual only. Run from the Actions tab (workflow_dispatch) or
+  # `gh workflow run publish.yml`.
   workflow_dispatch:
 
 permissions:
