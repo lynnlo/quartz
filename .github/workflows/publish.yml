@@ -14,7 +14,7 @@ name: Build notes & deploy to Vercel
 on:
   # Deploys are manual only. Run from the Actions tab (workflow_dispatch) or
   # `gh workflow run publish.yml`.
-  workflow_dispatch:
+ workflow_dispatch:
 
 permissions:
   contents: read
