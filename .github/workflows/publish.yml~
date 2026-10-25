@@ -1,0 +1,85 @@
+name: Build notes & deploy to Vercel
+
+# Design: the build happens in GitHub Actions (large memory) and the prebuilt
+# `public/` folder is uploaded to Vercel via `vercel --prebuilt`. The 100+ MB
+# content tree is NEVER committed to this repo and Vercel never builds it (its
+# Hobby sandbox is only 3 GB and the build needs ~7 GB).
+#
+# Requires these repo secrets:
+#   VAULT_REPO        - URL of your private vault repo, e.g. https://github.com/<you>/obsidian-vault
+#   VAULT_PAT         - fine-grained PAT with Read access to the vault repo
+#   VERCEL_TOKEN      - Vercel access token (Account → Settings → Tokens)
+#   VERCEL_ORG_ID     - from `vercel link` (team id), or "team_xxx"
+#   VERCEL_PROJECT_ID - from `vercel link` (project id)
+on:
+<<<<<<< HEAD
+  # Deploys are manual only. Run from the Actions tab (workflow_dispatch) or
+  # `gh workflow run publish.yml`.
+=======
+>>>>>>> 7748d94b39efe4fd6a37205317bc967b854a4c60
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publish
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout this repo (Quartz scaffold + scripts)
+        uses: actions/checkout@v4
+
+      # The full vault lives in a separate PRIVATE GitHub repo. It is cloned
+      # with a PAT so this public publish repo never stores the raw notes.
+      - name: Clone private vault repo
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ secrets.VAULT_REPO }}
+          token: ${{ secrets.VAULT_PAT }}
+          path: .vault
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci && npm run install-plugins
+
+      - name: Sync selected vault dirs into content/
+        run: bash scripts/sync.sh "$(pwd)/.vault"
+
+      # Build with a large Node heap — the vault's ~100 MB of media needs it
+      # (default 4 GB OOM'd; ~7 GB succeeds).
+      - name: Build static site
+        env:
+          NODE_OPTIONS: "--max-old-space-size=7168"
+        run: npx quartz build
+
+      - name: Install Vercel CLI
+        run: npm i -g vercel
+
+      # Stage the built public/ into .vercel/output (reads "outputDirectory"
+      # from vercel.json). Requires VERCEL_ORG_ID + VERCEL_PROJECT_ID envs and
+      # the token for auth — passed via VERCEL_TOKEN env (CLI auto-reads it).
+      - name: Stage build for Vercel
+        run: vercel build --prod --yes
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+      # Upload the prebuilt .vercel/output as the production deployment.
+      # No git commit of content, no Vercel-side build.
+      - name: Deploy to Vercel (production)
+        run: vercel deploy --prebuilt --prod --yes
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
