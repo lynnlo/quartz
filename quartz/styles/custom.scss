@@ -119,4 +119,21 @@
   border: 1px solid var(--lightgray);
   border-radius: 8px;
   background-color: color-mix(in srgb, var(--light) 60%, transparent);
+  // Panning a drawing must not start a text selection on the page.
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+// --- Embedded figures: no text selection --------------------------------
+// Dragging across a drawing or a graph should never smear a highlight over
+// the page. The Desmos plugin also ships this rule; repeating it here keeps the
+// behaviour when a different plugin version is installed.
+.excalidraw-page,
+.excalidraw-container,
+.excalidraw-container svg,
+.obsidian-desmos,
+.obsidian-desmos iframe {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
 }
