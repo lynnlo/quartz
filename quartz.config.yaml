@@ -55,6 +55,9 @@ plugins:
     order: 45
     options:
       apiKey: "dac04c3a4d444fecbb63df4c193a7621"
+      # Graph height. Caps at 520px on tall windows, shrinks to 70% of the
+      # viewport on short ones.
+      height: "min(70vh, 520px)"
   - source: "@quartz-community/created-modified-date"
     enabled: true
     options:
