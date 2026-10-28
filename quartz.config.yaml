@@ -58,6 +58,9 @@ plugins:
       # Graph height. Caps at 520px on tall windows, shrinks to 70% of the
       # viewport on short ones.
       height: "min(70vh, 520px)"
+  - source: "./plugins/scroll-guard"
+    enabled: true
+    order: 60
   - source: "@quartz-community/created-modified-date"
     enabled: true
     options:

@@ -1,0 +1,22 @@
+{
+  "name": "quartz-plugin-scroll-guard",
+  "version": "1.0.0",
+  "description": "Keeps page scrolling working over interactive embeds",
+  "type": "module",
+  "main": "./dist/index.js",
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "license": "MIT",
+  "quartz": {
+    "name": "scroll-guard",
+    "displayName": "Scroll Guard",
+    "description": "Lets the page scroll when the cursor is over an interactive embed such as an Excalidraw drawing.",
+    "version": "1.0.0",
+    "quartzVersion": ">=5.0.0",
+    "defaultOrder": 60,
+    "defaultEnabled": true,
+    "defaultOptions": {},
+    "optionSchema": {}
+  }
+}
